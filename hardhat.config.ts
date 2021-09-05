@@ -7,11 +7,13 @@ import "@nomiclabs/hardhat-etherscan";
 import { TASK_VERIFY } from "@nomiclabs/hardhat-etherscan/dist/src/constants";
 import { HardhatUserConfig } from "hardhat/types";
 import { task } from "hardhat/config";
+import { deployContract } from "ethereum-waffle";
+import { SS13 } from "./types";
 
-
+import SS13Artifact from "./artifacts/contracts/SS13.sol/SS13.json";
 
 export default {
-  solidity: "0.8.4",
+  solidity: "0.8.6",
   etherscan: {
     apiKey: process.env.ETHERSCAN_KEY,
   },
@@ -42,78 +44,37 @@ export default {
       url: `https://polygon-mainnet.infura.io/v3/${
         process.env.INFURA_PROJECT_ID || ""
       }`,
-      chainId: 97,
+      chainId: 137,
       gasMultiplier: 2,
     },
-    mumbai: {
-      url: `https://polygon-mumbai.infura.io/v3/${
-        process.env.INFURA_PROJECT_ID || ""
-      }`,
-      chainId: 80001,
-      gasMultiplier: 2,
-      accounts: [process.env.PRIVATE_KEY || ""],
-    },
-    // bsc: {},
-    // matic: {},
-    // avalanche: {},
   },
   typechain: {
     outDir: "types",
     target: "ethers-v5",
     externalArtifacts: ["externalArtifacts/*.json"], // optional array of glob patterns with external artifacts to process (for example external libs from node_modules)
   },
-};
+} as HardhatUserConfig;
 
-task("deploy-child-portal").setAction(async (taskArgs, { run, ethers, config }) => {
-  const signers = await ethers.getSigners();
-  config.etherscan.apiKey = process.env.POLYSCAN_KEY
-
-  const underlyingToken = "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1";
-  const mumbaiChildChainManagerProxy =
-    "0xb5505a6d998549090530911180f38aC5130101c6";
-
-  const constructorArgsParams = [
-    "WETH Portal Token",
-    "WPT",
-    underlyingToken,
-    mumbaiChildChainManagerProxy,
-  ];
-  const childTokenPortal = (await deployContract(
-    signers[0] as any,
-    ChildTokenPortalArtifact,
-    constructorArgsParams,
-    { gasLimit: 5000000 }
-  )) as ChildTokenPortal;
-  await run(TASK_VERIFY, {
-    address: childTokenPortal.address,
-    constructorArgsParams,
-  });
-  console.log("Wrapper address:", childTokenPortal.address);
-  return childTokenPortal;
-});
-
-task("deploy-root-portal").setAction(async (taskArgs, { run, ethers }) => {
+task("deploy-ss13").setAction(async (taskArgs, { run, ethers }) => {
   const signers = await ethers.getSigners();
 
-  const underlyingToken = "0x655F2166b0709cd575202630952D71E2bB0d61Af";
-  const predicateProxy = "0x37c3bfC05d5ebF9EBb3FF80ce0bd0133Bf221BC8";
+  const name = "SS13 Space Pirates";
+  const symbol = "SS13 Space Pirates";
+  const maxNftSupply = 10000;
+  const saleStart = Date.now() + 24 * 60 * 60;
 
-  const constructorArgsParams = [
-    "WETH Portal Token",
-    "WPT",
-    underlyingToken,
-    predicateProxy,
-  ];
-  const rootTokenPortal = (await deployContract(
-    signers[0] as any,
-    RootTokenPortalArtifact,
+  const constructorArgsParams = [name, symbol, maxNftSupply, saleStart];
+  const ss13Contact = (await deployContract(
+    signers[0],
+    SS13Artifact,
     constructorArgsParams,
     { gasLimit: 5000000 }
-  )) as RootTokenPortal;
+  )) as SS13;
+  await ss13Contact.deployTransaction.wait(3);
   await run(TASK_VERIFY, {
-    address: rootTokenPortal.address,
+    address: ss13Contact.address,
     constructorArgsParams,
   });
-  console.log("Wrapper address:", rootTokenPortal.address);
-  return rootTokenPortal;
+  console.log("SS13 NFT address:", ss13Contact.address);
+  return ss13Contact;
 });

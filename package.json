@@ -9,7 +9,7 @@
     "fork:eth": "dotenv -e .env npx hardhat node --fork https://mainnet.infura.io/v3/%INFURA_PROJECT_ID%"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.0",
     "@nomiclabs/hardhat-etherscan": "^2.1.4",
