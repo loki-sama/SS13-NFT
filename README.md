@@ -1,4 +1,4 @@
-# ss13-nft
+# SS13-NFT
 This is the SS13 NFT contract
 
 ## Setup
