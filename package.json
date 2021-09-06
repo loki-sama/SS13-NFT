@@ -1,10 +1,10 @@
 {
-  "name": "bridge-safe-sc",
+  "name": "ss13-nft",
   "version": "1.0.0",
-  "description": "smart contracts for safe of amun blockchain bridges",
+  "description": "smart contracts for ss13 nft",
   "scripts": {
     "test": "hardhat test",
-    "compile": "hardhat compile --force",
+    "compile": "hardhat compile --config hardhat.compile.config.ts",
     "typechain": "typechain --target ethers-v5",
     "fork:eth": "dotenv -e .env npx hardhat node --fork https://mainnet.infura.io/v3/%INFURA_PROJECT_ID%"
   },
@@ -28,6 +28,7 @@
     "ethereumjs-wallet": "^1.0.1",
     "ethers": "^5.0.0",
     "hardhat": "^2.5.0",
+    "solidity-coverage": "^0.7.17",
     "ts-node": "^10.1.0",
     "typechain": "^5.1.2",
     "typescript": "^4.3.5"
