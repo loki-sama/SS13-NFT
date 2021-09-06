@@ -1,5 +1,4 @@
-# bridge-safe-sc
-smart contracts for safe of amun blockchain bridges
+# ss13-nft
 
 
 ## Setup
